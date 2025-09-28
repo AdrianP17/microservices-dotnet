@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace catalogo.Data;
+namespace index.Data;
 
 public class AppDBContext : DbContext
 {

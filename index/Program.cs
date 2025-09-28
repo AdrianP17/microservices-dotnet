@@ -1,4 +1,4 @@
-using catalogo.Data;
+using index.Data;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using DotNetEnv;
@@ -21,7 +21,6 @@ builder.Services.AddDbContext<AppDBContext>(options =>
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
 
 var app = builder.Build();
 

@@ -1,6 +1,0 @@
-@filtro_HostAddress = http://localhost:5268
-
-GET {{filtro_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

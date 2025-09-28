@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace reseñas.Data;
+namespace promociones.Data;
 
 public class AppDBContext : DbContext
 {
