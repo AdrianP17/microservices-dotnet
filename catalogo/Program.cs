@@ -29,8 +29,13 @@ builder.Services.AddControllers()
 
 // Repositories
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<IAtributoRepository, AtributoRepository>();
+builder.Services.AddScoped<IAtributoValorRepository, AtributoValorRepository>();
+
 // Services
 builder.Services.AddScoped<IProductoService, ProductoService>();
+builder.Services.AddScoped<IAtributoService, AtributoService>();
+builder.Services.AddScoped<IAtributoValorService, AtributoValorService>();
 
 var app = builder.Build();
 
