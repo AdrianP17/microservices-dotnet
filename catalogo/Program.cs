@@ -31,11 +31,13 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IAtributoRepository, AtributoRepository>();
 builder.Services.AddScoped<IAtributoValorRepository, AtributoValorRepository>();
+builder.Services.AddScoped<IVarianteRepository, VarianteRepository>();
 
 // Services
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IAtributoService, AtributoService>();
 builder.Services.AddScoped<IAtributoValorService, AtributoValorService>();
+builder.Services.AddScoped<IVarianteService, VarianteService>();
 
 var app = builder.Build();
 

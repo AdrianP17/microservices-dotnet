@@ -66,5 +66,12 @@ namespace catalogo.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<AtributoValor>> GetAtributosValoresByIdsAsync(ICollection<int> ids)
+        {
+            return await _context.AtributoValor
+                .Where(av => ids.Contains(av.Id))
+                .ToListAsync();
+        }
     }
 }
