@@ -11,8 +11,8 @@ using catalogo.Data;
 namespace catalogo.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20250928042642_rename")]
-    partial class Rename
+    [Migration("20251006191612_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,10 +49,7 @@ namespace catalogo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AtributoId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdAtributo")
+                    b.Property<int>("AtributoId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Valor")
@@ -77,10 +74,7 @@ namespace catalogo.Migrations
                     b.Property<int>("IdCliente")
                         .HasColumnType("integer");
 
-                    b.Property<int>("IdProducto")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ProductoId")
+                    b.Property<int>("ProductoId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -114,6 +108,29 @@ namespace catalogo.Migrations
                     b.ToTable("Producto");
                 });
 
+            modelBuilder.Entity("catalogo.Models.ProductoAtributo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AtributoValorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AtributoValorId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.ToTable("ProductoAtributo");
+                });
+
             modelBuilder.Entity("catalogo.Models.ProductoImagen", b =>
                 {
                     b.Property<int>("Id")
@@ -122,9 +139,6 @@ namespace catalogo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("IdProducto")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Imagen")
                         .IsRequired()
                         .HasColumnType("text");
@@ -132,7 +146,7 @@ namespace catalogo.Migrations
                     b.Property<bool>("Principal")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("ProductoId")
+                    b.Property<int>("ProductoId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -150,14 +164,15 @@ namespace catalogo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("IdProducto")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("Precio")
                         .HasColumnType("numeric");
 
-                    b.Property<int?>("ProductoId")
+                    b.Property<int>("ProductoId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -174,16 +189,10 @@ namespace catalogo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AtributoValorId")
+                    b.Property<int>("AtributoValorId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("IdAtrValor")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdVariante")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("VarianteId")
+                    b.Property<int>("VarianteId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -203,20 +212,14 @@ namespace catalogo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("IdVarAtributo")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdVariante")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Imagen")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("VarianteAtributoId")
+                    b.Property<int>("VarianteAtributoId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("VarianteId")
+                    b.Property<int>("VarianteId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -232,7 +235,9 @@ namespace catalogo.Migrations
                 {
                     b.HasOne("catalogo.Models.Atributo", "Atributo")
                         .WithMany("AtributoValores")
-                        .HasForeignKey("AtributoId");
+                        .HasForeignKey("AtributoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Atributo");
                 });
@@ -241,7 +246,28 @@ namespace catalogo.Migrations
                 {
                     b.HasOne("catalogo.Models.Producto", "Producto")
                         .WithMany()
-                        .HasForeignKey("ProductoId");
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+                });
+
+            modelBuilder.Entity("catalogo.Models.ProductoAtributo", b =>
+                {
+                    b.HasOne("catalogo.Models.AtributoValor", "AtributoValor")
+                        .WithMany()
+                        .HasForeignKey("AtributoValorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("catalogo.Models.Producto", "Producto")
+                        .WithMany("ProductoAtributos")
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AtributoValor");
 
                     b.Navigation("Producto");
                 });
@@ -250,7 +276,9 @@ namespace catalogo.Migrations
                 {
                     b.HasOne("catalogo.Models.Producto", "Producto")
                         .WithMany("ProductoImagenes")
-                        .HasForeignKey("ProductoId");
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Producto");
                 });
@@ -259,7 +287,9 @@ namespace catalogo.Migrations
                 {
                     b.HasOne("catalogo.Models.Producto", "Producto")
                         .WithMany("Variantes")
-                        .HasForeignKey("ProductoId");
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Producto");
                 });
@@ -268,11 +298,15 @@ namespace catalogo.Migrations
                 {
                     b.HasOne("catalogo.Models.AtributoValor", "AtributoValor")
                         .WithMany()
-                        .HasForeignKey("AtributoValorId");
+                        .HasForeignKey("AtributoValorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("catalogo.Models.Variante", "Variante")
                         .WithMany("VarianteAtributos")
-                        .HasForeignKey("VarianteId");
+                        .HasForeignKey("VarianteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AtributoValor");
 
@@ -283,11 +317,15 @@ namespace catalogo.Migrations
                 {
                     b.HasOne("catalogo.Models.VarianteAtributo", "VarianteAtributo")
                         .WithMany()
-                        .HasForeignKey("VarianteAtributoId");
+                        .HasForeignKey("VarianteAtributoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("catalogo.Models.Variante", "Variante")
                         .WithMany("VarianteImagenes")
-                        .HasForeignKey("VarianteId");
+                        .HasForeignKey("VarianteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Variante");
 
@@ -301,6 +339,8 @@ namespace catalogo.Migrations
 
             modelBuilder.Entity("catalogo.Models.Producto", b =>
                 {
+                    b.Navigation("ProductoAtributos");
+
                     b.Navigation("ProductoImagenes");
 
                     b.Navigation("Variantes");
