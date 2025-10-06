@@ -74,7 +74,7 @@ namespace catalogo.Services
             return new AtributoValorDetalleDto
             {
                 Id = atributoValor.Id,
-                AtributoId = atributoValor.AtributoId ?? 0,
+                AtributoId = atributoValor.AtributoId,
                 Valor = atributoValor.Valor,
                 NombreAtributo = atributoValor.Atributo?.Nombre
             };

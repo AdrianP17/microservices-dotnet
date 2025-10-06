@@ -4,9 +4,9 @@ namespace catalogo.Models
     {
         public int Id { get; set; }
         public int ProductoId { get; set; }
-        public int AtributoId { get; set; }
+        public int AtributoValorId { get; set; }
 
-        public Producto? Producto { get; set; }
-        public Atributo? Atributo { get; set; }
+        public Producto Producto { get; set; } = null!;
+        public AtributoValor AtributoValor { get; set; } = null!;
     }
 }

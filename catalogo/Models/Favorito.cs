@@ -6,6 +6,6 @@ namespace catalogo.Models
         public int ProductoId { get; set; }
         public int IdCliente { get; set; }
 
-        public Producto? Producto { get; set; }
+        public Producto Producto { get; set; } = null!;
     }
 }
