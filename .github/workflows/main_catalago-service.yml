@@ -27,10 +27,23 @@ jobs:
           dotnet-version: '9.x'
 
       - name: Build with dotnet
-        run: dotnet build ./catalogo/ --configuration Release
+        run: dotnet build ./catalogo/catalogo.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./catalogo/ -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./catalogo/catalogo.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Install dotnet-ef tool
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Run EF Core Migrations
+        run: |
+          dotnet ef database update \
+            --project ./catalogo/catalogo.csproj \
+            --startup-project ./catalogo/catalogo.csproj \
+            --connection-string "${{ secrets.AZURE_POSTGRES_CONNECTION_STRING }}" \
+            --verbose
+        env:
+          DATABASE_URL: ${{ secrets.AZURE_POSTGRES_CONNECTION_STRING }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
