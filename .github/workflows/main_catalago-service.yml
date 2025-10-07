@@ -30,13 +30,13 @@ jobs:
         run: dotnet build ./catalogo/catalogo.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./catalogo/catalogo.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./catalogo/catalogo.csproj -c Release -o ./myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./myapp
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,5 +64,5 @@ jobs:
         with:
           app-name: 'catalago-service'
           slot-name: 'Production'
-          package: .
+          package: ./.net-app
           
