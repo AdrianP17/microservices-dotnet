@@ -14,10 +14,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 if (string.IsNullOrEmpty(connectionString))
 {
-    throw new InvalidOperationException("DATABASE_URL environment variable is not set.");
+    // Si la cadena de conexión no se encuentra en 'DefaultConnection' (lo que Azure inyecta), 
+    // entonces intenta obtenerla directamente como variable de entorno (para el caso de dotnet env o Docker)
+    connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+}
+
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Connection string is missing. Set 'DefaultConnection' or 'DATABASE_URL'.");
 }
 
 builder.Services.AddDbContext<AppDBContext>(options =>
@@ -40,6 +48,27 @@ builder.Services.AddScoped<IAtributoValorService, AtributoValorService>();
 builder.Services.AddScoped<IVarianteService, VarianteService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDBContext>();
+
+        context.Database.Migrate(); 
+
+        Console.WriteLine("Database migration and seeding successful.");
+    }
+    catch (Exception ex)
+    {
+        // Logging de errores es crucial si falla la migración
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        // Si el curso lo permite, podrías detener la aplicación aquí
+        // throw; 
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
