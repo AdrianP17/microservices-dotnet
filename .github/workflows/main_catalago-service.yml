@@ -32,18 +32,13 @@ jobs:
       - name: dotnet publish
         run: dotnet publish ./catalogo/catalogo.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Install dotnet-ef tool
-        run: dotnet tool install --global dotnet-ef
+      - name: Create Ef Migration Bundle
+        run: | 
+          dotnet tool install --global dotnet-ef
+          dotnet ef migrations bundle --project ./catalogo/catalogo.csproj --output efbundle
 
-      - name: Run EF Core Migrations
-        run: |
-          dotnet ef database update \
-            --project ./catalogo/catalogo.csproj \
-            --startup-project ./catalogo/catalogo.csproj \
-            --connection-string "${{ secrets.AZURE_POSTGRES_CONNECTION_STRING }}" \
-            --verbose
-        env:
-          DATABASE_URL: ${{ secrets.AZURE_POSTGRES_CONNECTION_STRING }}
+      - name: Run EF Migrations
+        run: ./efbundle --connection "${{ secrets.AZURE_POSTGRES_CONNECTION_STRING }}"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
